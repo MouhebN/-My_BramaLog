@@ -26,6 +26,7 @@ public class ProductEntity {
     @Getter
     @Setter
     public static class Pbi {
+        private UUID id = UUID.randomUUID();
         private String title;
         private String description;
         private int priority;
@@ -33,8 +34,9 @@ public class ProductEntity {
         private double estimatedCost;
         private double businessValue;
         private List<String> acceptanceCriteria = new ArrayList<>();
-    }
+        private PbiStatus status = PbiStatus.A_DISCUTER;
 
+    }
     @Getter
     @Setter
     public static class Estimation {
