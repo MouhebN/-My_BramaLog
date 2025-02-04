@@ -13,8 +13,11 @@ import java.util.UUID;
 @Setter
 public class ClientEntity {
     @Id
-    private UUID id = UUID.randomUUID();
+    private String id = UUID.randomUUID().toString();
 
     private String name;
+    private String emailPerso;
     private String email;
+    private String password;
+
 }

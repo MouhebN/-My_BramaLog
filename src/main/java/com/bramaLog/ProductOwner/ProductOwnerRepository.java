@@ -7,5 +7,4 @@ import java.util.UUID;
 
 
 @Repository
-public interface ProductOwnerRepository extends MongoRepository<ProductOwnerEntity, UUID> {
-}
+public interface ProductOwnerRepository extends MongoRepository<ProductOwnerEntity, UUID> {}
