@@ -21,13 +21,19 @@ public class ProductService {
 
     public CreateProductResponse addProduct(CreateProductRequest createProductRequest) {
         ProductEntity productEntity = productMapper.toEntity(createProductRequest);
+
+        productEntity.getBacklog().forEach(pbi -> {
+            if (pbi.getStatus() == null) {
+                pbi.setStatus(PbiStatus.A_DISCUTER);
+            }
+        });
         ProductEntity.Estimation estimation = calculateEstimation(productEntity.getBacklog());
         productEntity.setEstimation(estimation);
         ProductEntity savedEntity = productRepository.save(productEntity);
         return productMapper.toDto(savedEntity);
     }
 
-    public CreateProductResponse updateProduct(UUID id, CreateProductRequest updatedProductRequest) {
+    public CreateProductResponse updateProduct(String id, CreateProductRequest updatedProductRequest) {
         return productRepository.findById(id).map(existingProduct -> {
             ProductEntity updatedProduct = productMapper.toEntity(updatedProductRequest);
             existingProduct.setName(updatedProduct.getName());
@@ -46,7 +52,7 @@ public class ProductService {
         return productRepository.findAll().stream().map(productMapper::toDto).toList();
     }
 
-    public Optional<CreateProductResponse> getProductById(UUID id) {
+    public Optional<CreateProductResponse> getProductById(String id) {
         return productRepository.findById(id).map(productMapper::toDto);
     }
 
@@ -68,7 +74,7 @@ public class ProductService {
         return estimation;
     }
 
-    public CreateProductResponse updatePbiStatus(UUID productId, UUID pbiId, UpdatePbiStatusRequest statusRequest) {
+    public CreateProductResponse updatePbiStatus(String productId, String pbiId, UpdatePbiStatusRequest statusRequest) {
         return productRepository.findById(productId).map(product -> {
             ProductEntity.Pbi targetPbi = product.getBacklog().stream()
                     .filter(pbi -> pbi.getId().equals(pbiId))
@@ -76,6 +82,30 @@ public class ProductService {
                     .orElseThrow(() -> new IllegalArgumentException("PBI not found"));
 
             targetPbi.setStatus(statusRequest.status());
+            ProductEntity savedEntity = productRepository.save(product);
+            return productMapper.toDto(savedEntity);
+        }).orElseThrow(() -> new RuntimeException("Product not found"));
+    }
+
+    public CreateProductResponse updatePbi(String productId, String pbiId, UpdatePbiRequest updatePbiRequest) {
+        return productRepository.findById(productId).map(product -> {  // Use productId as String
+            // Find the PBI to update
+            ProductEntity.Pbi targetPbi = product.getBacklog().stream()
+                    .filter(pbi -> pbi.getId().equals(pbiId))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("PBI not found"));
+
+            // Update only provided fields
+            if (updatePbiRequest.title() != null) targetPbi.setTitle(updatePbiRequest.title());
+            if (updatePbiRequest.description() != null) targetPbi.setDescription(updatePbiRequest.description());
+            if (updatePbiRequest.priority() != null) targetPbi.setPriority(updatePbiRequest.priority());
+            if (updatePbiRequest.storyPoints() != null) targetPbi.setStoryPoints(updatePbiRequest.storyPoints());
+            if (updatePbiRequest.estimatedCost() != null) targetPbi.setEstimatedCost(updatePbiRequest.estimatedCost());
+            if (updatePbiRequest.businessValue() != null) targetPbi.setBusinessValue(updatePbiRequest.businessValue());
+            if (updatePbiRequest.acceptanceCriteria() != null) targetPbi.setAcceptanceCriteria(updatePbiRequest.acceptanceCriteria());
+            if (updatePbiRequest.status() != null) targetPbi.setStatus(updatePbiRequest.status());
+
+            // Save the updated product with modified PBI
             ProductEntity savedEntity = productRepository.save(product);
             return productMapper.toDto(savedEntity);
         }).orElseThrow(() -> new RuntimeException("Product not found"));

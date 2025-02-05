@@ -14,7 +14,7 @@ import java.util.UUID;
 @Setter
 public class ProductEntity {
     @Id
-    private UUID id = UUID.randomUUID();
+    private String id = UUID.randomUUID().toString();
 
     private String name;
     private String description;
@@ -26,7 +26,7 @@ public class ProductEntity {
     @Getter
     @Setter
     public static class Pbi {
-        private UUID id = UUID.randomUUID();
+        private String id = UUID.randomUUID().toString();
         private String title;
         private String description;
         private int priority;
@@ -37,6 +37,7 @@ public class ProductEntity {
         private PbiStatus status = PbiStatus.A_DISCUTER;
 
     }
+
     @Getter
     @Setter
     public static class Estimation {

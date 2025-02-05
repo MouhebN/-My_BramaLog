@@ -31,7 +31,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CreateProductResponse> getProductById(@PathVariable UUID id) {
+    public ResponseEntity<CreateProductResponse> getProductById(@PathVariable String id) {
         return productService.getProductById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -39,7 +39,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CreateProductResponse> updateProduct(
-            @PathVariable UUID id,
+            @PathVariable String id,
             @RequestBody CreateProductRequest updatedProductRequest) {
         CreateProductResponse updatedProduct = productService.updateProduct(id, updatedProductRequest);
         return ResponseEntity.ok(updatedProduct);
@@ -47,10 +47,18 @@ public class ProductController {
     
     @PatchMapping("/{productId}/backlog/{pbiId}/status")
     public ResponseEntity<CreateProductResponse> updatePbiStatus(
-            @PathVariable UUID productId,
-            @PathVariable UUID pbiId,
+            @PathVariable String productId,
+            @PathVariable String pbiId,
             @RequestBody UpdatePbiStatusRequest statusRequest) {
         CreateProductResponse updatedProduct = productService.updatePbiStatus(productId, pbiId, statusRequest);
+        return ResponseEntity.ok(updatedProduct);
+    }
+    @PatchMapping("/{productId}/backlog/{pbiId}")
+    public ResponseEntity<CreateProductResponse> updatePbi(
+            @PathVariable String productId,
+            @PathVariable String pbiId,
+            @RequestBody UpdatePbiRequest updatePbiRequest) {
+        CreateProductResponse updatedProduct = productService.updatePbi(productId, pbiId, updatePbiRequest);
         return ResponseEntity.ok(updatedProduct);
     }
 }
