@@ -3,9 +3,9 @@ package com.bramaLog.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.UUID;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/products")
@@ -44,7 +44,7 @@ public class ProductController {
         CreateProductResponse updatedProduct = productService.updateProduct(id, updatedProductRequest);
         return ResponseEntity.ok(updatedProduct);
     }
-    
+
     @PatchMapping("/{productId}/backlog/{pbiId}/status")
     public ResponseEntity<CreateProductResponse> updatePbiStatus(
             @PathVariable String productId,
@@ -53,6 +53,7 @@ public class ProductController {
         CreateProductResponse updatedProduct = productService.updatePbiStatus(productId, pbiId, statusRequest);
         return ResponseEntity.ok(updatedProduct);
     }
+
     @PatchMapping("/{productId}/backlog/{pbiId}")
     public ResponseEntity<CreateProductResponse> updatePbi(
             @PathVariable String productId,
@@ -62,3 +63,4 @@ public class ProductController {
         return ResponseEntity.ok(updatedProduct);
     }
 }
+
